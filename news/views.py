@@ -1,3 +1,23 @@
-from django.shortcuts import render
+# Импортируем класс, который говорит нам о том,
+# что в этом представлении мы будем выводить список объектов из БД
+from django.views.generic import ListView, DetailView
+from .models import Post
 
-# Create your views here.
+
+class PostList(ListView):
+    # Указываем модель, объекты которой мы будем выводить
+    model = Post
+    # Поле, по которому будет выполняться сортировка
+    ordering = '-created'  # Сортировка от новых к старым
+    # Указываем имя шаблона
+    template_name = 'news.html'
+    # Имя списка, в котором будут лежать все объекты
+    context_object_name = 'Post'
+
+class NewsDetails(DetailView):
+    # Модель всё та же, но мы хотим получать информацию по отдельному товару
+    model = Post
+    # Используем другой шаблон — product.html
+    template_name = 'news.html'
+    # Название объекта, в котором будет выбранный пользователем продукт
+    context_object_name = 'Post'
