@@ -1,14 +1,34 @@
-<!--  наследуемся от шаблона default.html, который мы создавали для flatpages -->
 {% extends 'flatpages/default.html' %}
 
-<!-- Название у нас будет products -->
 {% block title %}
 Post
 {% endblock title %}
 
-<!-- В контенте на странице мы выводим все товары -->
 {% block content %}
 <h1>Все посты</h1>
-{{ Post.title }}<!-- Если у вас один объект, например {{ post }}, где post ссылается на конкретный объект, то вы можете просто через точку вывести все его атрибуты: -->
-{{ Post.text }}   <!-- {{ post.title }} ,  {{ post.text }}          -->
+<h3>{{ time_now|date:'M d Y' }}</h3>
+<h3>{{ next_update|default_if_none:"Чуть позже сообщим о новых постах!" }}</h3>
+
+<hr>
+{% if posts %}
+    <table>
+        <tr>
+            <td>Заголовок</td>
+            <td>Описание</td>
+            <td>Автор</td>
+            <td>Дата создания</td>
+        </tr>
+
+        {% for news in Post %}
+        <tr>
+            <td>{{ post.title }}</td>
+            <td>{{ post.content|truncatewords:2 }}</td>
+            <td>{{ post.author.username }}</td>
+            <td>{{ post.created_at|date:'M d Y' }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% else %}
+    <h2>Постов нет!</h2>
+{% endif %}
 {% endblock content %}
