@@ -13,7 +13,7 @@ class PostList(ListView):                                      ### Есть ви
     # Указываем имя шаблона
     template_name = 'news.html'
     # Имя списка, в котором будут лежать все объекты
-    context_object_name = 'Post'
+    context_object_name = 'posts'
 
 class NewsDetails(DetailView):
     # Модель всё та же, но мы хотим получать информацию по отдельному товару
