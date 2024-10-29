@@ -1,0 +1,14 @@
+<!--  наследуемся от шаблона default.html, который мы создавали для flatpages -->
+{% extends 'flatpages/default.html' %}
+
+<!-- Название у нас будет products -->
+{% block title %}
+Post
+{% endblock title %}
+
+<!-- В контенте на странице мы выводим все товары -->
+{% block content %}
+<h1>Пост</h1>
+{{ Post.title }}<!-- Если у вас один объект, например {{ post }}, где post ссылается на конкретный объект, то вы можете просто через точку вывести все его атрибуты: -->
+{{ Post.text }}   <!-- {{ post.title }} ,  {{ post.text }}          -->
+{% endblock content %}
