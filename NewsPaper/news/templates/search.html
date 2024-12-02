@@ -1,0 +1,55 @@
+{% extends 'flatpages/default.html' %}
+
+{% block title %}
+Поиск новостей
+{% endblock title %}
+
+{% block content %}
+  <h1>Поиск новостей</h1>
+
+  <form method="get">
+    {{ form.as_p }}
+    <button type="submit">Искать</button>
+  </form>
+
+  {% if page_obj %}
+    <table>
+        <tr>
+            <td>Заголовок</td>
+            <td>Описание</td>
+            <td>Автор</td>
+            <td>Дата создания</td>
+        </tr>
+
+        {% for post in page_obj %}
+        <tr>
+            <td>{{ post.title }}</td>
+            <td>{{ post.text|truncatewords:20 }}</td>
+            <td>{{ post.author.username }}</td>
+            <td>{{ post.created|date:'M d Y' }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <!-- Пагинация -->
+    <div class="pagination">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1">&laquo; первая</a>
+                <a href="?page={{ page_obj.previous_page_number }}">предыдущая</a>
+            {% endif %}
+
+            <span class="current">
+                Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}.
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">следующая</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}">последняя &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+  {% else %}
+    <p>Ничего не найдено.</p>
+  {% endif %}
+{% endblock content %}
