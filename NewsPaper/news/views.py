@@ -1,6 +1,7 @@
 # Импортируем класс, который говорит нам о том,
 # что в этом представлении мы будем выводить список объектов из БД
-from django.views.generic import ListView, DetailView
+from django.urls import reverse_lazy
+from django.views.generic import ListView, DetailView, CreateView
 from django.shortcuts import render
 from django.core.paginator import Paginator
 from .models import Post
@@ -8,6 +9,9 @@ from django.views import View
 from datetime import datetime
 #Добавим представление NewsSearch для обработки фильтрации
 from .forms import NewsSearchForm
+from .filters import PostFilter
+from django_filters.views import FilterView
+
 
 
 class PostList(ListView):                                      ### Есть видео от ментора!
@@ -49,4 +53,32 @@ class NewsSearch(View):
         page_obj = paginator.get_page(page_number)
 
         # Рендерим шаблон с формой и результатами
-        return render(request, 'news/search.html', {'form': form, 'page_obj': page_obj})
+        #!!!!!return render(request, 'news/search.html', {'form': form, 'page_obj': page_obj})
+        return render(request, 'search.html', {'form': form, 'page_obj': page_obj})
+
+#Добавление фильтрации 'Поиска по дате'
+class PostListView(FilterView):
+    model = Post
+    filterset_class = PostFilter  # Указываем фильтр
+    template_name = 'data_search.html'
+    context_object_name = 'filter'  # Название переменной в контексте для фильтра
+
+
+class PostCreateView(CreateView):
+    model = Post
+    # template_name = 'news_edit.html'  # Указываем шаблон new_edit.html
+    template_name = 'new_edit.html'  # Указываем шаблон new_edit.html
+    fields = ['title', 'text', 'cats', 'post_type']  # Поля формы для создания новости
+    success_url = reverse_lazy('news_list')  # Направление на страницу списка новостей после успешного создания
+    # model = NewsSearchForm
+    # form_class = Post
+    # template_name = 'news/create.html'
+
+    def form_valid(self, form):
+        # Сохраняем форму и устанавливаем автора (или можно оставить для редактирования через админку)
+        form.instance.author = self.request.user.author  # Пример, если автор связан с User
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        # После создания перенаправляем на страницу новостей
+        return reverse_lazy('news_list')  # Замените на ваше имя URL для списка новостей
