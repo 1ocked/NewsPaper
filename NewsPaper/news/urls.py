@@ -1,7 +1,7 @@
 from django.urls import path
 # Импортируем созданное нами представление
-from .views import PostList, NewsDetails, NewsSearch, PostListView, PostCreateView
-
+from .views import PostList, NewsDetails, NewsSearch, PostListView, PostCreateView, PostUpdateView, PostDeleteView
+from .views import ArticleCreateView, ArticleUpdateView, ArticleDeleteView
 
 urlpatterns = [
    # path — означает путь.
@@ -18,6 +18,11 @@ urlpatterns = [
    path('search/', NewsSearch.as_view(), name='news_search'),  # Новый маршрут для поиска
    #path('posts/', PostListView.as_view(), name='news_data_search'),
    path('data_search/', PostListView.as_view(), name='post_data_search'),
-   path('create/', PostCreateView.as_view(), name='news_create')
+   path('create/', PostCreateView.as_view(), name='news_create'),
+   path('<int:pk>/update/', PostUpdateView.as_view(), name='news_update'), #http://127.0.0.1:8000/news/12/update/
+   path('<int:pk>/delete/', PostDeleteView.as_view(), name='news_delete'),
+   path('articles/create/', ArticleCreateView.as_view(), name='article_create'), #http://127.0.0.1:8000/news/articles/create/
+   path('articles/<int:pk>/edit/', ArticleUpdateView.as_view(), name='article_edit'),
+   path('articles/<int:pk>/delete/', ArticleDeleteView.as_view(), name='article_delete'),
 ]
 

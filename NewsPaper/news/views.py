@@ -1,7 +1,7 @@
 # Импортируем класс, который говорит нам о том,
 # что в этом представлении мы будем выводить список объектов из БД
 from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.shortcuts import render
 from django.core.paginator import Paginator
 from .models import Post
@@ -68,17 +68,67 @@ class PostCreateView(CreateView):
     model = Post
     # template_name = 'news_edit.html'  # Указываем шаблон new_edit.html
     template_name = 'new_edit.html'  # Указываем шаблон new_edit.html
-    fields = ['title', 'text', 'cats', 'post_type']  # Поля формы для создания новости
+    fields = ['author', 'title', 'text', 'cats']  # Поля формы для создания новости//!!! # ЕСть видео от ментораauthor_post_create_2024-12-11_16-08-12
     success_url = reverse_lazy('news_list')  # Направление на страницу списка новостей после успешного создания
     # model = NewsSearchForm
     # form_class = Post
     # template_name = 'news/create.html'
-
-    def form_valid(self, form):
-        # Сохраняем форму и устанавливаем автора (или можно оставить для редактирования через админку)
-        form.instance.author = self.request.user.author  # Пример, если автор связан с User
-        return super().form_valid(form)
+#Авторизация будет реализована в след модуле Видео author_post_create_2024-12-11_16-08-12
+    # def form_valid(self, form):
+    #     # Сохраняем форму и устанавливаем автора (или можно оставить для редактирования через админку)
+    #     form.instance.author = self.request.user.author  # Пример, если автор связан с User
+    #     return super().form_valid(form)
 
     def get_success_url(self):
         # После создания перенаправляем на страницу новостей
         return reverse_lazy('news_list')  # Замените на ваше имя URL для списка новостей
+
+class PostUpdateView(UpdateView):  #http://127.0.0.1:8000/news/12/update/
+    model = Post
+    fields = ['author', 'title', 'text', 'cats']
+    template_name = 'new_edit.html'
+    success_url = reverse_lazy('news_list')
+
+class PostDeleteView(DeleteView):  #http://127.0.0.1:8000/news/12/delete/
+    model = Post
+    fields = ['author', 'title', 'text', 'cats']
+    template_name = 'new_delete.html'
+    success_url = reverse_lazy('news_list')
+
+# Создание форм Артикля
+
+#Представление для создания статьи (/articles/create/)
+class ArticleCreateView(CreateView):
+    model = Post
+    template_name = 'article_create.html'  # Укажите ваш шаблон
+    fields = ['title', 'text', 'cats']  # Поля для формы, 'post_type' не указываем, так как оно скрыто
+
+    def form_valid(self, form):
+        form.instance.post_type = Post.article  # Устанавливаем тип поста как 'статья'
+        form.instance.author = self.request.user.author  # Устанавливаем автора, если привязка есть
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('article_detail', kwargs={'pk': self.object.pk})  # Перенаправление на страницу статьи после создания
+
+
+#Представление для редактирования статьи (/articles/<int:pk>/edit/)
+class ArticleUpdateView(UpdateView):
+    model = Post
+    template_name = 'article_edit.html'  # Укажите ваш шаблон
+    fields = ['title', 'text', 'cats']  # Поля для формы, 'post_type' не указываем
+
+    def form_valid(self, form):
+        form.instance.post_type = Post.article  # Убедитесь, что тип поста остаётся статьей
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('article_detail', kwargs={'pk': self.object.pk})  # Перенаправление на страницу статьи после редактирования
+
+
+#3. Представление для удаления статьи (/articles/<int:pk>/delete/)
+class ArticleDeleteView(DeleteView):
+    model = Post
+    template_name = 'article_confirm_delete.html'  # Шаблон для подтверждения удаления
+    context_object_name = 'article'  # Название переменной в шаблоне
+    success_url = reverse_lazy('article_list')  # Перенаправление на страницу списка статей после удаления

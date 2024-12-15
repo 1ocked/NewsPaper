@@ -9,7 +9,8 @@ class NewsSearchForm(forms.Form):
 
     class Meta:
         model = Post
-        fields = ['title', 'text', 'cats', 'post_type']  # изменил 'category' на 'cats'
+        #fields = ['title', 'text', 'cats', 'post_type']  # изменил 'category' на 'cats'
+        fields = ['title', 'text', 'cats'] #Поле post_type должно быть скрыто от пользователя и не должно быть доступно для редактирования через форму.
 
     def clean(self):
         cleaned_data = super().clean()
