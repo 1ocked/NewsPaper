@@ -11,6 +11,7 @@ from datetime import datetime
 from .forms import NewsSearchForm
 from .filters import PostFilter
 from django_filters.views import FilterView
+from django.contrib.auth.mixins import LoginRequiredMixin #Для того чтобы добавить проверку аутентификации в класс ArticleUpdateView, нужно использовать миксин LoginRequiredMixin
 
 
 
@@ -64,36 +65,26 @@ class PostListView(FilterView):
     context_object_name = 'filter'  # Название переменной в контексте для фильтра
 
 
-class PostCreateView(CreateView):
+class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
-    # template_name = 'news_edit.html'  # Указываем шаблон new_edit.html
-    template_name = 'new_edit.html'  # Указываем шаблон new_edit.html
-    fields = ['author', 'title', 'text', 'cats']  # Поля формы для создания новости//!!! # ЕСть видео от ментораauthor_post_create_2024-12-11_16-08-12
-    success_url = reverse_lazy('news_list')  # Направление на страницу списка новостей после успешного создания
-    # model = NewsSearchForm
-    # form_class = Post
-    # template_name = 'news/create.html'
-#Авторизация будет реализована в след модуле Видео author_post_create_2024-12-11_16-08-12
-    # def form_valid(self, form):
-    #     # Сохраняем форму и устанавливаем автора (или можно оставить для редактирования через админку)
-    #     form.instance.author = self.request.user.author  # Пример, если автор связан с User
-    #     return super().form_valid(form)
-
-    def get_success_url(self):
-        # После создания перенаправляем на страницу новостей
-        return reverse_lazy('news_list')  # Замените на ваше имя URL для списка новостей
-
-class PostUpdateView(UpdateView):  #http://127.0.0.1:8000/news/12/update/
+    template_name = 'new_edit.html'
+    fields = ['author', 'title', 'text', 'cats']
+    success_url = reverse_lazy('news_list')
+class PostUpdateView(LoginRequiredMixin, UpdateView):  #http://127.0.0.1:8000/news/12/update/
     model = Post
     fields = ['author', 'title', 'text', 'cats']
     template_name = 'new_edit.html'
     success_url = reverse_lazy('news_list')
 
-class PostDeleteView(DeleteView):  #http://127.0.0.1:8000/news/12/delete/
+class PostDeleteView(LoginRequiredMixin, DeleteView): #http://127.0.0.1:8000/news/12/delete/
     model = Post
-    fields = ['author', 'title', 'text', 'cats']
     template_name = 'new_delete.html'
     success_url = reverse_lazy('news_list')
+# class PostDeleteView(DeleteView):  #http://127.0.0.1:8000/news/12/delete/
+#     model = Post
+#     fields = ['author', 'title', 'text', 'cats']
+#     template_name = 'new_delete.html'
+#     success_url = reverse_lazy('news_list')
 
 # Создание форм Артикля
 
@@ -113,17 +104,19 @@ class ArticleCreateView(CreateView):
 
 
 #Представление для редактирования статьи (/articles/<int:pk>/edit/)
-class ArticleUpdateView(UpdateView):
+class ArticleUpdateView(LoginRequiredMixin, UpdateView):
     model = Post
     template_name = 'article_edit.html'  # Укажите ваш шаблон
     fields = ['title', 'text', 'cats']  # Поля для формы, 'post_type' не указываем
 
+    # Переопределяем метод form_valid для того, чтобы установить тип поста как статью
     def form_valid(self, form):
         form.instance.post_type = Post.article  # Убедитесь, что тип поста остаётся статьей
         return super().form_valid(form)
 
+    # Переопределяем метод get_success_url для перенаправления на страницу статьи
     def get_success_url(self):
-        return reverse_lazy('article_detail', kwargs={'pk': self.object.pk})  # Перенаправление на страницу статьи после редактирования
+        return reverse_lazy('article_detail', kwargs={'pk': self.object.pk})  # Перенаправление на страницу статьи после успешного редактирования
 
 
 #3. Представление для удаления статьи (/articles/<int:pk>/delete/)
@@ -132,3 +125,11 @@ class ArticleDeleteView(DeleteView):
     template_name = 'article_confirm_delete.html'  # Шаблон для подтверждения удаления
     context_object_name = 'article'  # Название переменной в шаблоне
     success_url = reverse_lazy('article_list')  # Перенаправление на страницу списка статей после удаления
+
+# class ArticleDetail(DetailView):
+#     # Модель всё та же, но мы хотим получать информацию по отдельному товару
+#     model = Post
+#     # Используем другой шаблон — product.html
+#     template_name = 'article_detail.html'
+#     # Название объекта, в котором будет выбранный пользователем продукт
+#     context_object_name = 'article'

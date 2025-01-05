@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 import os
 from pathlib import Path
 
+from django.urls import reverse_lazy
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -42,7 +44,16 @@ INSTALLED_APPS = [
     'django.contrib.flatpages',
     'news',
     'accounts',
-    'django_filters'
+    'django_filters',
+#D8.4 ЕСть отдельный проект Djnaago autorization
+    'sign',
+    'protect',
+#allauth приложения
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.yandex',
 ]
 
 SITE_ID = 1   #!!!!!!!!!!!!! Без этого не запускается панель админа
@@ -55,6 +66,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+# Add the account middleware:
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = 'NewsPaper.urls'
@@ -131,5 +144,24 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # static папка (И в настройках добавить строчку в самом конце, для подгрузки стилей из папки static :)
-STATICFILES_DIRS = [ BASE_DIR / "static" ]
+#STATICFILES_DIRS = [ BASE_DIR / "static" ]
 
+# Указываем страницу, на которую будет перенаправлен пользователь, если он не авторизован
+LOGIN_URL = '/accounts/login/'  # Путь к странице входа, который у вас настроен (например, через allauth)
+# Указываем путь, на который будет перенаправляться пользователь после успешного входа
+#LOGIN_REDIRECT_URL = '/profile/'  # или другой путь, на который должен быть перенаправлен пользователь #!!!
+LOGIN_REDIRECT_URL = reverse_lazy('home')  # Или ваш основной URL
+
+
+AUTHENTICATION_BACKENDS = (
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
+
+
+SOCIALACCOUNT_PROVIDERS = {
+    'yandex': {
+        'SCOPE': ['login:email'],
+        'AUTH_PARAMS': {'access_type': 'online'},
+        'OAUTH_PKCE_ENABLED': True,
+    }
+}
