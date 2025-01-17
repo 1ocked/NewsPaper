@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.yandex',
 ]
 
+
 SITE_ID = 1   #!!!!!!!!!!!!! Без этого не запускается панель админа
 
 MIDDLEWARE = [
@@ -153,10 +154,19 @@ LOGIN_URL = '/accounts/login/'  # Путь к странице входа, ко�
 LOGIN_REDIRECT_URL = reverse_lazy('home')  # Или ваш основной URL
 
 
-AUTHENTICATION_BACKENDS = (
-    'allauth.account.auth_backends.AuthenticationBackend',
-)
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',  # Для логина с использованием имени пользователя
+    'allauth.account.auth_backends.AuthenticationBackend',  # Для использования методов аутентификации allauth
+]
 
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+#Чтобы allauth распознал нашу форму как ту, что должна выполняться вместо формы
+#по умолчанию, необходимо добавить строчку в файл настроек проекта settings.py:
+ACCOUNT_FORMS = {'signup': 'sign.models.CommonSignupForm'}
 
 SOCIALACCOUNT_PROVIDERS = {
     'yandex': {
