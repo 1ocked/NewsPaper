@@ -2,9 +2,9 @@
 
 {% block content %}
 <h2>Страница авторизованного пользователя {{request.user.username}}</h2>
-<div> Здесь может содержаться персональная информация для каждого пользователя </div>
+<div> Здесь может содержаться персональная информация(AD) для каждого пользователя </div>
 
-{% if is_not_premium %}
+{% if is_not_Authors %}
 <button> <a href="sign/upgrade/"> Хочу в Authors!</a> </button>
 {% endif %}
 

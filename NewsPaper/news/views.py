@@ -70,11 +70,13 @@ class PostCreateView(LoginRequiredMixin, CreateView):
     template_name = 'new_edit.html'
     fields = ['author', 'title', 'text', 'cats']
     success_url = reverse_lazy('news_list')
+    permission_required = 'news.add_post' ########## Задание 11
 class PostUpdateView(LoginRequiredMixin, UpdateView):  #http://127.0.0.1:8000/news/12/update/
     model = Post
     fields = ['author', 'title', 'text', 'cats']
     template_name = 'new_edit.html'
     success_url = reverse_lazy('news_list')
+    permission_required = 'news.add_post'  ########## Задание 11
 
 class PostDeleteView(LoginRequiredMixin, DeleteView): #http://127.0.0.1:8000/news/12/delete/
     model = Post
@@ -93,6 +95,7 @@ class ArticleCreateView(CreateView):
     model = Post
     template_name = 'article_create.html'  # Укажите ваш шаблон
     fields = ['title', 'text', 'cats']  # Поля для формы, 'post_type' не указываем, так как оно скрыто
+    permission_required = 'news.add_post'  ########## Задание 11
 
     def form_valid(self, form):
         form.instance.post_type = Post.article  # Устанавливаем тип поста как 'статья'
@@ -108,6 +111,7 @@ class ArticleUpdateView(LoginRequiredMixin, UpdateView):
     model = Post
     template_name = 'article_edit.html'  # Укажите ваш шаблон
     fields = ['title', 'text', 'cats']  # Поля для формы, 'post_type' не указываем
+    permission_required = 'news.add_post'  ########## Задание 11
 
     # Переопределяем метод form_valid для того, чтобы установить тип поста как статью
     def form_valid(self, form):

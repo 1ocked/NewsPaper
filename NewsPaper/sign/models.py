@@ -25,7 +25,7 @@ from allauth.account.forms import SignupForm
 from django.contrib.auth.models import Group
 
 
-class CommonSignupForm(SignupForm):
+class CommonSignupForm(SignupForm):  #http://127.0.0.1:8000/accounts/login/?next=/ путь для регистрации с авто добавлением в группу "common"
 
     def save(self, request):
         user = super(CommonSignupForm, self).save(request)
