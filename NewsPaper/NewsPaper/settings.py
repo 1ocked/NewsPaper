@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 import os
 from pathlib import Path
 
+from celery.schedules import crontab
 from django.urls import reverse_lazy
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -182,6 +183,24 @@ ADMINS = [
     # список всех админов в формате ('имя', 'их почта')
 ]
 SERVER_EMAIL = 'ruslan7maslianov@yandex.ru'  # это будет у нас вместо аргумента FROM в массовой рассылке
+
+# Celery settings
+CELERY_BROKER_URL = 'redis://localhost:6379/0'  # URL брокера сообщений
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'  # URL бекенда для хранения результатов задач
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'UTC'
+#Настройка Celery Beat для периодических задач
+INSTALLED_APPS += ['django_celery_beat',]
+
+CELERY_BEAT_SCHEDULE = {
+    'send-weekly-newsletter': {
+        'task': 'news.tasks.send_weekly_newsletter',
+        'schedule': crontab(day_of_week='monday', hour=8, minute=0),
+    },
+}
+
 
 SOCIALACCOUNT_PROVIDERS = {
     'yandex': {

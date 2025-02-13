@@ -5,15 +5,17 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.shortcuts import render, redirect
 from django.core.paginator import Paginator
+from pyexpat.errors import messages
+
 from .models import Post, Category
 from django.views import View
-from datetime import datetime
+from datetime import datetime, timezone
 #Добавим представление NewsSearch для обработки фильтрации
 from .forms import NewsSearchForm
 from .filters import PostFilter
 from django_filters.views import FilterView
 from django.contrib.auth.mixins import LoginRequiredMixin #Для того чтобы добавить проверку аутентификации в класс ArticleUpdateView, нужно использовать миксин LoginRequiredMixin
-
+#from django.db.models.signals import post_save
 
 
 class PostList(ListView):                                      ### Есть видео от ментора!
@@ -72,6 +74,22 @@ class PostCreateView(LoginRequiredMixin, CreateView):
     fields = ['author', 'title', 'text', 'cats']
     success_url = reverse_lazy('news_list')
     permission_required = 'news.add_post' ########## Задание 11
+#D9.4
+    def form_valid(self, form):
+        form.instance.post_type = Post.article  # Устанавливаем тип поста как 'статья'
+        form.instance.author = self.request.user.author  # Устанавливаем автора
+
+        # Проверка на ограничение количества новостей в сутки
+        today = timezone.now().date()
+        user_posts_today = Post.objects.filter(author=self.request.user.author, created__date=today).count()
+        if user_posts_today >= 3:
+            messages.error(self.request, 'Вы не можете публиковать более трёх новостей в сутки.')
+            return self.form_invalid(form)
+
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('article_detail', kwargs={'pk': self.object.pk})  # Перенаправление на страницу статьи после создания
 class PostUpdateView(LoginRequiredMixin, UpdateView):  #http://127.0.0.1:8000/news/12/update/
     model = Post
     fields = ['author', 'title', 'text', 'cats']
