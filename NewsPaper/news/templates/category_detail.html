@@ -1,0 +1,8 @@
+<!-- category_detail.html -->
+{% if user.is_authenticated %}
+  <form method="post" action="{% url 'subscribe_to_category' category.id %}">
+    {% csrf_token %}
+    <button type="submit">Подписаться</button>
+  </form>
+{% endif %}
+

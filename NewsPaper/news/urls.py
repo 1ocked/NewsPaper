@@ -1,7 +1,9 @@
 from django.urls import path
+from accounts import views
 # Импортируем созданное нами представление
 from .views import PostList, NewsDetails, NewsSearch, PostListView, PostCreateView, PostUpdateView, PostDeleteView
 from .views import ArticleCreateView, ArticleUpdateView, ArticleDeleteView
+from .views import subscribe_to_category
 
 urlpatterns = [
    # path — означает путь.
@@ -19,11 +21,13 @@ urlpatterns = [
    #path('posts/', PostListView.as_view(), name='news_data_search'),
    path('data_search/', PostListView.as_view(), name='post_data_search'),
    path('create/', PostCreateView.as_view(), name='news_create'),
-   path('<int:pk>/update/', PostUpdateView.as_view(), name='news_update'), #http://127.0.0.1:8000/news/12/update/
+   path('<int:pk>/update/', PostUpdateView.as_view(), name='news_update'),
+   #http://127.0.0.1:8000/news/12/update/
    path('<int:pk>/delete/', PostDeleteView.as_view(), name='news_delete'),
    path('articles/create/', ArticleCreateView.as_view(), name='article_create'), #http://127.0.0.1:8000/news/articles/create/
    path('articles/<int:pk>/edit/', ArticleUpdateView.as_view(), name='article_edit'),
    path('articles/<int:pk>/delete/', ArticleDeleteView.as_view(), name='article_delete'),
+   path('category/<int:category_id>/subscribe/', views.subscribe_to_category, name='subscribe_to_category'),
    # path('articles/<int:pk>/', ArticleDetailView.as_view(), name='article_detail'),
 ]
 

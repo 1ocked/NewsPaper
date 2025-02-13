@@ -168,6 +168,21 @@ ACCOUNT_EMAIL_VERIFICATION = 'none'
 #по умолчанию, необходимо добавить строчку в файл настроек проекта settings.py:
 ACCOUNT_FORMS = {'signup': 'sign.models.CommonSignupForm'}
 
+#SMTP Yandex.ru Отправка сообзение на почту Модуль D9.3
+# Email Configuration (for sending mail using Yandex SMTP server)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.yandex.ru'  # Yandex SMTP server
+EMAIL_PORT = 465  # SMTP port for Yandex
+EMAIL_HOST_USER = 'ruslan7maslianov'  # Your Yandex email username
+EMAIL_HOST_PASSWORD = 'tjggreqqdyqmhoev'  # Your Yandex email password
+EMAIL_USE_SSL = True  # Yandex uses SSL, so set this to True
+
+ADMINS = [
+    ('habay', 'habay@mail.ru'),
+    # список всех админов в формате ('имя', 'их почта')
+]
+SERVER_EMAIL = 'ruslan7maslianov@yandex.ru'  # это будет у нас вместо аргумента FROM в массовой рассылке
+
 SOCIALACCOUNT_PROVIDERS = {
     'yandex': {
         'SCOPE': ['login:email'],

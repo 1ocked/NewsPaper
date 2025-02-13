@@ -1,10 +1,11 @@
 # Импортируем класс, который говорит нам о том,
 # что в этом представлении мы будем выводить список объектов из БД
+from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.core.paginator import Paginator
-from .models import Post
+from .models import Post, Category
 from django.views import View
 from datetime import datetime
 #Добавим представление NewsSearch для обработки фильтрации
@@ -130,10 +131,13 @@ class ArticleDeleteView(DeleteView):
     context_object_name = 'article'  # Название переменной в шаблоне
     success_url = reverse_lazy('article_list')  # Перенаправление на страницу списка статей после удаления
 
-# class ArticleDetail(DetailView):
-#     # Модель всё та же, но мы хотим получать информацию по отдельному товару
-#     model = Post
-#     # Используем другой шаблон — product.html
-#     template_name = 'article_detail.html'
-#     # Название объекта, в котором будет выбранный пользователем продукт
-#     context_object_name = 'article'
+#D9.2
+@login_required
+def subscribe_to_category(request, category_id):
+    category = Category.objects.get(id=category_id)
+
+    # Проверяем, не подписан ли уже пользователь
+    if request.user not in category.subscribers.all():
+        category.subscribers.add(request.user)
+
+    return redirect('category_detail', category_id=category.id)  # Перенаправляем на страницу категории

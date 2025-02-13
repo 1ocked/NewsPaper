@@ -34,6 +34,8 @@ class Author(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=64, unique=True)
+    #D9.2
+    subscribers = models.ManyToManyField(User, related_name='subscribed_categories', blank=True)
 
     def __str__(self):  #Видео author_post_create_2024-12-11_16-08-12
         return self.name
@@ -91,3 +93,12 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.user.username
+
+#D9.3
+class Subscription(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    subscribed_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} подписан на {self.category.name}"
