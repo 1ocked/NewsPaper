@@ -55,6 +55,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.yandex',
+    #django_celery_beat для планирования периодических задач
+    'django_celery_beat',
 ]
 
 
